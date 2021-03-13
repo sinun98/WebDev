@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link href="site.css" rel="stylesheet">
+    <link rel="icon" type="image/vnd.microsoft.icon" href=".\favicon.ico">
+    
+
+    <title>Formel 1 Tippspiel</title>
+</head>
+
+<body>
+    <h1>Formel 1 Tippspiel</h1>
+
+    <div class= "navigation">
+        <ol start="12" class="liste">
+            <li><a class="listenelement" href="index.html" >Startseite</a></li>
+            <li><a class="listenelement" href="Tippübersicht.html" >Tippübersicht</a></li>
+            <li><a class="listenelement_aktuell">Tippabgabe</a></li>
+        
+        </ol>
+    </div>
+    
+   
+
+    <form id="createTippForm">
+        <input type="text" id="ID" name="ID" style="border-color:black" placeholder="Tipp ID"><br>
+        <p></p>
+        <input type="text" id="Platz1" name="Platz1" style="border-color:black" onkeydown="return alphaOnly(event);" placeholder="Erster Platz" ><br>
+        <p></p>
+        <input type="text" id="Platz2" name="Platz2" style="border-color:black" onkeydown="return alphaOnly(event);" placeholder="Zweiter Platz" ><br>
+        <p></p>
+        <input type="text" id="Platz3" name="Platz3" style="border-color:black" onkeydown="return alphaOnly(event);" placeholder="Dritter Platz" ><br>
+        <p></p>
+        <input type="text" id="Platz4" name="Platz4" style="border-color:black" onkeydown="return alphaOnly(event);" placeholder="Vierter Platz" ><br>
+        <p></p>
+        <button type="submit">Tipp abgeben</button><br>
+    </form>
+    <p id="result"></p>
+    <footer class="erschaffer">
+        <b>Simon, Fatih, Sven, Florian, Yann</b>
+    </footer>
+
+
+
+<script>
+    //JSON Validierung nur Buchstaben zugelassen
+    function alphaOnly(event) {
+  var key = event.keyCode;
+  return ((key >= 65 && key <= 90) || (key >= 37 && key <= 40)|| key == 8 || key == 32 || key == 46|| key == 186 || key == 192 || key == 222);
+};
+    //save tipp event
+    const form = document.querySelector('#createTippForm');
+    
+    form.addEventListener('submit', (event) => {
+    
+        //get json from input
+        event.preventDefault();
+    
+        const values = Object.fromEntries(new FormData(event.target));
+    
+        document.getElementById('ID').style.borderColor = "black"
+        document.getElementById('Platz1').style.borderColor = "black"
+        document.getElementById('Platz2').style.borderColor = "black"
+        document.getElementById('Platz3').style.borderColor = "black"
+        document.getElementById('Platz4').style.borderColor = "black"
+    
+        //check if all fields are filled correct
+        if (values.ID == "") {
+            alert("ID wurde nicht ausgefüllt!");
+            document.getElementById('ID').style.borderColor = "red"
+        } else if (values.Platz1 == "") {
+            alert("Platz 1 wurde nicht ausgefüllt!");
+            document.getElementById('Platz1').style.borderColor = "red"
+        } else if (values.Platz2 == "") {
+            alert("Platz 2 wurde nicht ausgefüllt!");
+            document.getElementById('Platz2').style.borderColor = "red"
+        } else if (values.Platz3 == "") {
+            alert("Platz 3 wurde nicht ausgefüllt!");
+            document.getElementById('Platz3').style.borderColor = "red"
+        } else if (values.Platz4 == "") {
+            alert("Platz 4 wurde nicht ausgefüllt!");
+            document.getElementById('Platz4').style.borderColor = "red"
+        } else {
+            //save tipp
+            fetch('http://localhost:3000/api/save', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(values)
+            }).then(res => {
+    
+                const status = res.status;
+    
+                if (status == 400) {
+                    document.getElementById("result").innerHTML = values.ID + " already exists! Try another ID.";
+                }
+    
+                if (status == 201) {
+                    document.getElementById("result").innerHTML = "Successful saved " + values.ID + "!";
+    
+                }
+            });
+    
+        }
+    
+    });
+    
+      </script>
+
+</body>
+</html>

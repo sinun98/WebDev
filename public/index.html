@@ -1,0 +1,42 @@
+<!doctype html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link href="site.css" rel="stylesheet">
+    <link rel="icon" type="image/vnd.microsoft.icon" href=".\favicon.ico">
+    <title>Formel 1 Tippspiel</title>
+</head>
+
+<body>
+  <script language="javascript" type="text/javascript" src="fahrertabelle.js"></script>  
+  <h1>Formel 1 Tippspiel</h1>
+
+    <div class= "navigation">
+        <ol start="12" class="liste">
+            <li ><a class="listenelement_aktuell">Startseite</a></li>
+            <li ><a class="listenelement" href="Tippübersicht.html">Tippübersicht</a></li>
+            <li ><a class="listenelement" href="abgabe.html" >Tippabgabe</a></li>
+        
+        </ol>
+    </div>
+    
+    <div>
+      <select id="selYear">
+          <option selected value="">Bitte Jahr auswählen</option>
+          <option value="2019">2019</option>
+          <option value="2018">2018</option>
+          <option value="2017">2017</option>
+          <option value="2016">2016</option>
+          <option value="2015">2015</option>
+      </select>
+  </div>
+<input id="ZeigeFahrerübersicht" type="button" onclick="CreateFahrerTabelle()" value="Zeige Fahrerübersicht" />
+<p id="showData"></p>
+    
+<footer class="erschaffer">
+    <b>Simon, Fatih, Sven, Florian, Yann</b>
+</footer>
+
+   
+</body>
+</html>

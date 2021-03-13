@@ -1,0 +1,25 @@
+{
+  "name": "webprojekt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "backend.js",
+  "scripts": {
+    "start": "nodemon backend",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^1.19.3"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SimonBraeuninger/Web-Programmierung.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SimonBraeuninger/Web-Programmierung/issues"
+  },
+  "homepage": "https://github.com/SimonBraeuninger/Web-Programmierung#readme"
+}

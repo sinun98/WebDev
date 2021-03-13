@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link href="site.css" rel="stylesheet">
+    <link rel="icon" type="image/vnd.microsoft.icon" href=".\favicon.ico">
+    
+
+    <title>Formel 1 Tippspiel</title>
+</head>
+
+<body onload="loadTipps()">
+    <h1>Formel 1 Tippspiel</h1>
+
+    <div class= "navigation">
+        <ol start="12" class="liste">
+            <li><a class="listenelement" href="index.html" >Startseite</a></li>
+            <li><a class="listenelement_aktuell">Tippübersicht</a></li>
+            <li><a class="listenelement" href="abgabe.html">Tippabgabe</a></li>
+        
+        </ol>
+    </div>
+
+    <div id=alreadysaved></div>
+
+    <div id=selected></div>
+    <div id=wasitsuccessful></div>
+    <div id=buttons></div>
+    <table id=anzeigetabelle></table>
+    <form id=edittabelle></form>
+
+    <footer class="erschaffer">
+        <b>Simon, Fatih, Sven, Florian, Yann</b>
+    </footer>
+
+</body>
+
+<script>
+
+    function loadTipps() {
+        fetch('http://localhost:3000/api/fahrer', {
+                method: 'GET',
+                mode: 'no-cors',
+    
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+    
+            }).then(res => res.json())
+            .then(res => {
+                const status = res.status;
+    
+                //check if tipps.json is emty
+                if (res.length == undefined) {
+                    document.getElementById("alreadysaved").innerHTML = "Bitte erst einen Tipp erstellen!";
+                }
+                if (res.length >= 1) {
+                    document.getElementById("alreadysaved").innerHTML = "Tipp zum bearbeiten auswählen!";
+                    //dropdown
+                    var dropdown = document.getElementById("selected");
+                    y = document.createElement("select");
+                    y.id = "auswahl"
+                    for (var i = 0; i < res.length; i++) {
+                        var opt = res[i];
+                        y.innerHTML += "<option value=\"" + opt.ID + "\">" + opt.ID + "</option>";
+                    }
+                    //addbuttons
+                    var b = document.getElementById("buttons");
+                    dropdown.append(y);
+                    var show = document.createElement("button");
+                    show.id = "show";
+                    show.innerHTML = "Show";
+                    b.appendChild(show);
+    
+                    var clear = document.createElement("button");
+                    clear.id = "delete";
+                    clear.innerHTML = "Delete";
+                    b.appendChild(clear);
+    
+                    var edit = document.createElement("button");
+                    edit.id = "edit";
+                    edit.innerHTML = "Edit";
+                    b.appendChild(edit);
+    
+    
+    
+                    //event show
+                    document.querySelector('#show').addEventListener('click', () => {
+    
+                        var e = document.getElementById("auswahl");
+                        var result = e.options[e.selectedIndex].value;
+                        fetch('http://localhost:3000/api/tipp/' + result, {
+                                method: 'GET',
+    
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+    
+                            })
+                            .then(res => {
+    
+                                var status = res.status;
+                                
+    
+                                if (status == 200) {
+                                    res.json().then(json => {
+                                        //erzeuge Tabelle
+                                        document.getElementById("anzeigetabelle").innerHTML = "";
+                                        document.getElementById('edittabelle').innerHTML = "";
+                                        var resulttable = document.getElementById("anzeigetabelle");
+                                        for (var j in json) {
+                                            resulttable.innerHTML += "<td>" + j + ":</td><td>" + json[j] + "</td>";
+    
+                                        }
+                                        
+    
+                                    })
+                                } else {
+                                    document.getElementById("wasitsuccessful").innerHTML = "Abruf fehlgeschlagen.";
+                                }
+                            })
+    
+    
+                    });
+    
+    
+                    //event delete
+                    document.querySelector('#delete').addEventListener('click', () => {
+    
+                        var e = document.getElementById("auswahl");
+                        var result = e.options[e.selectedIndex].value;
+                        
+    
+                        fetch('http://localhost:3000/api/delete/' + result, {
+                                credentials: 'same-origin',
+                                method: 'DELETE',
+                                mode: 'cors',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+    
+    
+    
+                            })
+                            .then(res => {
+                                const status = res.status;
+    
+                                if (status == 200) {
+                                    location.reload();
+                                    
+                                } else {
+                                    document.getElementById("wasitsuccessful").innerHTML = "Löschen fehlgeschlagen :(";
+                                }
+                            })
+    
+    
+                    });
+    
+    
+                    //event edit
+                    document.querySelector('#edit').addEventListener('click', () => {
+    
+                        var e = document.getElementById("auswahl");
+                        var result = e.options[e.selectedIndex].value;
+                        
+    
+                        fetch('http://localhost:3000/api/tipp/' + result, {
+                                method: 'GET',
+    
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+    
+                            })
+                            .then(res => {
+    
+                                var status = res.status;
+    
+                                if (status == 200) {
+                                    res.json().then(json => {
+                                        document.getElementById("anzeigetabelle").innerHTML = "";
+                                        document.getElementById('edittabelle').innerHTML = "";
+                                        var addInput = document.getElementById('edittabelle');
+                                        //create static ID Field
+                                        var t = document.createTextNode("ID: \u00A0 \u00A0 \u00A0");
+                                        var x = document.createElement("INPUT");
+                                        var br = document.createElement("br");
+                                        x.setAttribute("type", "text");
+                                        x.setAttribute("value", json.ID);
+                                        x.readOnly = true;
+                                        x.disabled = true;
+                                        addInput.appendChild(t);
+                                        addInput.appendChild(x);
+                                        addInput.appendChild(br);
+                                        //create tipp fields
+                                        for (var i = 1; i < 5; i++) {
+                                            var addInput = document.getElementById('edittabelle');
+                                            var t = document.createTextNode("Platz " + i + ":");
+                                            var x1 = document.createElement("INPUT");
+                                            x1.id = "edit" + i;
+                                            var br = document.createElement("br");
+                                            x1.setAttribute("type", "text");
+                                            x1.setAttribute("value", json[`Platz${i}`]);
+                                            addInput.appendChild(t);
+                                            addInput.appendChild(x1);
+                                            addInput.appendChild(br);
+                                        }
+                                        //create save button
+                                        var saveedit = document.createElement("button");
+                                        saveedit.id = "saveedit";
+                                        saveedit.type = "button";
+                                        saveedit.innerHTML = "Save";
+                                        addInput.appendChild(saveedit);
+    
+    
+    
+                                        //event save button edit
+                                        document.getElementById('saveedit').addEventListener('click', (event) => {
+                                            //get new input values
+    
+                                            var a = document.getElementById('edit1').value
+                                            var b = document.getElementById('edit2').value
+                                            var c = document.getElementById('edit3').value
+                                            var d = document.getElementById('edit4').value
+                                            
+    
+                                            const values = {
+                                                ID: result,
+                                                Platz1: a,
+                                                Platz2: b,
+                                                Platz3: c,
+                                                Platz4: d
+                                            }
+                                            
+                                            //save new tipp
+                                            fetch('http://localhost:3000/api/edit/' + result, {
+                                                    method: 'PATCH',
+                                                    body: JSON.stringify(values),
+                                                    headers: {
+    
+                                                        'Content-Type': 'application/json'
+                                                    },
+    
+    
+    
+                                                })
+                                                .then(res => {
+                                                    const status = res.status;
+    
+                                                    if (status == 200) {
+    
+                                                        document.getElementById("edittabelle").innerHTML = "Erfolgreich gespeichert";
+                                                    } else {
+                                                        document.getElementById("edittabelle").innerHTML = "Error bitte erneut versuchen";
+                                                    }
+                                                })
+    
+                                        });
+    
+    
+    
+    
+                                    })
+                                }
+    
+                            })
+    
+    
+    
+    
+                    });
+    
+    
+    
+                } 
+            }); 
+    } 
+    
+    
+    
+    
+    </script> 
+</html>
